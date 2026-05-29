@@ -17,24 +17,26 @@
 7. [Complete Setup Guide — Part A: Your Computer](#7-complete-setup-guide--part-a-your-computer)
 8. [Complete Setup Guide — Part B: Android](#8-complete-setup-guide--part-b-android)
 9. [Complete Setup Guide — Part C: iOS (Mac Only)](#9-complete-setup-guide--part-c-ios-mac-only)
-10. [Running the App — Android](#10-running-the-app--android)
-11. [Running the App — iOS](#11-running-the-app--ios)
+10. [Running the App on iPhone from VS Code](#10-running-the-app-on-iphone-from-vs-code)
+11. [Running the App — Android](#11-running-the-app--android)
 12. [Using the App](#12-using-the-app)
-13. [Project Structure Explained](#13-project-structure-explained)
-14. [The AI Models — Deep Dive](#14-the-ai-models--deep-dive)
-15. [Liveness Detection — How We Stop Fake Attacks](#15-liveness-detection--how-we-stop-fake-attacks)
-16. [Face Recognition Pipeline](#16-face-recognition-pipeline)
-17. [Security Architecture](#17-security-architecture)
-18. [Offline Storage Design](#18-offline-storage-design)
-19. [AWS Cloud Sync](#19-aws-cloud-sync)
-20. [Performance Benchmarks](#20-performance-benchmarks)
-21. [API Reference](#21-api-reference)
-22. [Datalake 3.0 Integration Guide](#22-datalake-30-integration-guide)
-23. [Troubleshooting](#23-troubleshooting)
-24. [Frequently Asked Questions](#24-frequently-asked-questions)
-25. [Contributing](#25-contributing)
-26. [Complete Tech Stack](#26-complete-tech-stack)
-27. [License](#27-license)
+13. [AWS Infrastructure — Already Deployed](#13-aws-infrastructure--already-deployed)
+14. [How to View Synced Data in AWS](#14-how-to-view-synced-data-in-aws)
+15. [Project Structure Explained](#15-project-structure-explained)
+16. [The AI Models — Deep Dive](#16-the-ai-models--deep-dive)
+17. [Liveness Detection — How We Stop Fake Attacks](#17-liveness-detection--how-we-stop-fake-attacks)
+18. [Face Recognition Pipeline](#18-face-recognition-pipeline)
+19. [Security Architecture](#19-security-architecture)
+20. [Offline Storage Design](#20-offline-storage-design)
+21. [AWS Cloud Sync — Technical Details](#21-aws-cloud-sync--technical-details)
+22. [Performance Benchmarks](#22-performance-benchmarks)
+23. [API Reference](#23-api-reference)
+24. [Datalake 3.0 Integration Guide](#24-datalake-30-integration-guide)
+25. [Troubleshooting](#25-troubleshooting)
+26. [Frequently Asked Questions](#26-frequently-asked-questions)
+27. [Contributing](#27-contributing)
+28. [Complete Tech Stack](#28-complete-tech-stack)
+29. [License](#29-license)
 
 ---
 
@@ -478,79 +480,176 @@ To run on a real iPhone:
 
 ---
 
-## 10. Running the App — Android
+## 10. Running the App on Mac with VS Code
 
-### Step 1: Start Metro (JavaScript bundler)
+> **This is the complete guide for running the project on a Mac using VS Code.** Every command runs inside VS Code's built-in terminal — you never need to leave VS Code.
 
-Open a terminal in the project folder:
+### Step 1 — Open the project in VS Code
+
+Open your Mac terminal and run:
+```bash
+code ~/Downloads/FaceAuthApp
+```
+
+VS Code opens with the full project loaded in the Explorer panel on the left.
+
+If `code` command is not found: open VS Code → press `Cmd+Shift+P` → type `Shell Command: Install 'code' command in PATH` → press Enter. Then retry.
+
+### Step 2 — Open two terminals inside VS Code
+
+Press `` Ctrl+` `` (backtick) to open the terminal panel at the bottom.  
+Click the **+** button on the top-right of the terminal panel to open a second terminal.
+
+You should see two tabs at the bottom:
+
+```
+┌──────────────────────────────────────────────────┐
+│  VS Code — FaceAuthApp                           │
+│  ┌────────────────────────────────────────────┐  │
+│  │  EXPLORER          src/services/Sync...    │  │
+│  │  ├── src/          ← browse code here      │  │
+│  │  ├── android/                              │  │
+│  │  ├── ios/                                  │  │
+│  │  └── README.md                             │  │
+│  └────────────────────────────────────────────┘  │
+│  ┌──────────────────┬─────────────────────────┐  │
+│  │  bash  ×  bash + │                         │  │
+│  │  Terminal 1      │  Terminal 2              │  │
+│  │  (keep Metro     │  (run build              │  │
+│  │   running here)  │   commands here)         │  │
+│  └──────────────────┴─────────────────────────┘  │
+└──────────────────────────────────────────────────┘
+```
+
+### Step 3 — Install JavaScript dependencies (first time only)
+
+In **Terminal 1**:
+```bash
+npm install --legacy-peer-deps
+```
+
+Takes 2–3 minutes. Installs ~568 packages into `node_modules/`.
+
+### Step 4 — Install iOS native dependencies (first time only)
+
+Still in **Terminal 1**:
+```bash
+cd ios && pod install && cd ..
+```
+
+Takes 3–5 minutes. Downloads all native iOS libraries. When done you will see:
+```
+Pod installation complete! There are XX dependencies from the Podfile and XX total pods installed.
+```
+
+### Step 5 — Start Metro bundler (Terminal 1)
+
 ```bash
 npx react-native start
 ```
 
-Leave this running. It watches your JS files and sends updates to the app instantly.
+Metro is the JavaScript bundler — it watches your code files and sends live updates to the app. **Leave this running the entire time.** You will see:
 
-### Step 2: Run on Android
+```
+                                                          
+              ██████╗   █████╗  ██╗    ██╗                
+             ██╔══██╗ ██╔══██╗ ██║    ██║                
+             ██████╔╝ ███████║ ██║ █╗ ██║                
+             ██╔══██╗ ██╔══██║ ██║███╗██║                
+             ██║  ██║ ██║  ██║ ╚███╔███╔╝                
+             ╚═╝  ╚═╝ ╚═╝  ╚═╝  ╚══╝╚══╝                 
+                                                          
+                 Metro waiting on port 8081
 
-Open a **second terminal** in the project folder:
-```bash
-npx react-native run-android
 ```
 
-What happens:
-1. Gradle compiles the Android native code (~2 minutes first time, ~30 seconds after)
-2. The app APK is built
-3. APK is installed on your device/emulator
-4. App launches automatically
-5. Metro sends the JS bundle to the app
+### Step 6 — Run the app on iOS Simulator (Terminal 2)
 
-**Common first-run issues:**
-
-| Error | Fix |
-|---|---|
-| `SDK location not found` | Set `ANDROID_HOME` environment variable (see Section 8.3) |
-| `No connected devices` | Enable USB debugging on phone, or start emulator first |
-| `Gradle build failed` | Run `cd android && ./gradlew clean && cd ..` then try again |
-| `Metro server not running` | Start Metro first with `npx react-native start` |
-
-### Step 3: Enable Camera Permission
-
-On first launch, Android will ask for camera permission. Tap **Allow**.
-
----
-
-## 11. Running the App — iOS
-
-### Step 1: Start Metro
-
-```bash
-npx react-native start
-```
-
-### Step 2: Run on iOS Simulator
-
+Switch to **Terminal 2** and run:
 ```bash
 npx react-native run-ios
 ```
 
-Or specify a device:
+What happens step by step:
+1. Xcode compiles all native code — **takes 3–5 minutes the first time**, ~30 seconds after that
+2. iOS Simulator launches (a virtual iPhone appears on your Mac screen)
+3. FaceAuth app installs and opens automatically in the Simulator
+
+To pick a specific simulator model:
 ```bash
 npx react-native run-ios --simulator="iPhone 15 Pro"
+npx react-native run-ios --simulator="iPhone 14"
+npx react-native run-ios --simulator="iPhone SE (3rd generation)"
 ```
 
-**Note:** The iOS Simulator cannot use the camera. For camera features, use a physical device.
-
-### Step 3: Run on Physical iPhone
-
-1. Connect iPhone via USB
-2. Open `ios/FaceAuthApp.xcworkspace` in Xcode
-3. Select your iPhone from the device list
-4. Press the **Play** button (▶) in Xcode
-5. On your iPhone, go to **Settings → General → VPN & Device Management** → Trust your developer certificate
-
-Or from terminal:
+To see all available simulators on your Mac:
 ```bash
-npx react-native run-ios --device "Your iPhone Name"
+xcrun simctl list devices available
 ```
+
+### What the Simulator looks like
+
+```
+┌─────────────────────┐
+│  iPhone 15 Pro      │
+│  ┌───────────────┐  │
+│  │               │  │
+│  │   FaceAuth    │  │
+│  │               │  │
+│  │  👤 Enrolled  │  │
+│  │     Users: 0  │  │
+│  │               │  │
+│  │ [Authenticate]│  │
+│  │ [Enrol User]  │  │
+│  │ [Admin Panel] │  │
+│  │               │  │
+│  └───────────────┘  │
+└─────────────────────┘
+```
+
+### Step 7 — Making code changes (live reload)
+
+While Metro is running in Terminal 1, any change you save in VS Code instantly updates the app:
+
+1. Open any file in VS Code (e.g. `src/screens/HomeScreen.tsx`)
+2. Change some text or style
+3. Press `Cmd+S` to save
+4. The Simulator updates within 1–2 seconds — no rebuild needed
+
+To do a full reload manually: press `Cmd+R` inside the Simulator, or shake gesture → **Reload**.
+
+### Step 8 — View logs from the app
+
+While Metro runs in Terminal 1, all `console.log()` output from the app appears there in real time. This is how you debug issues.
+
+To see native iOS logs (crashes, native errors):
+```bash
+npx react-native log-ios
+```
+
+---
+
+## 11. Running the App — Android (Optional)
+
+> Android requires a connected Android phone or Android Studio emulator. Skip this section if you are on Mac using the iOS Simulator.
+
+### Step 1: Start Metro
+```bash
+npx react-native start
+```
+
+### Step 2: Run on Android emulator or phone
+```bash
+npx react-native run-android
+```
+
+**Common errors:**
+
+| Error | Fix |
+|---|---|
+| `SDK location not found` | Create `android/local.properties` with: `sdk.dir=/Users/YourName/Library/Android/sdk` |
+| `No connected devices` | Start an Android emulator in Android Studio first, or connect an Android phone with USB debugging enabled |
+| `Gradle build failed` | Run `cd android && ./gradlew clean && cd ..` then try again |
 
 ---
 
@@ -619,7 +718,168 @@ Delete a user:
 
 ---
 
-## 13. Project Structure Explained
+## 13. AWS Infrastructure — Already Deployed
+
+> **All AWS resources have already been created and are live.** You do not need to set up anything. This section documents what was deployed so you understand how it works.
+
+### What is running in AWS (ap-south-1 / Mumbai region)
+
+| Resource | Name | Details |
+|---|---|---|
+| **API Gateway** | `face-auth-api` | HTTP API, auto-deploys, CORS enabled |
+| **Lambda Function** | `face-auth-sync` | Python 3.12, 30s timeout |
+| **DynamoDB Table** | `face-auth-sessions` | Pay-per-request billing, 90-day auto-delete TTL |
+| **IAM Role** | `face-auth-lambda-role` | DynamoDB write + CloudWatch logs permissions |
+
+### The live endpoint
+
+```
+POST https://hxzyjbjg05.execute-api.ap-south-1.amazonaws.com/prod/sessions
+```
+
+The app (`src/services/SyncService.ts`) already points to this URL. When your phone has internet, authentication sessions sync here automatically.
+
+### How the sync works
+
+```
+iPhone / iOS Simulator
+        │
+        │  When WiFi connects, app sends:
+        │  POST /sessions
+        │  [
+        │    {
+        │      "id": "uuid",
+        │      "userId": "uuid",
+        │      "timestamp": 1717000000000,
+        │      "livenessScore": 1.0,
+        │      "recognitionScore": 0.97,
+        │      "deviceId": "device-uuid",
+        │      "location": ""
+        │    },
+        │    ...up to 50 sessions per batch
+        │  ]
+        ▼
+API Gateway (hxzyjbjg05) — handles HTTPS, routing
+        │
+        ▼
+Lambda (face-auth-sync) — validates and writes to DB
+        │
+        ▼
+DynamoDB (face-auth-sessions) — stores permanently
+        │
+        └── auto-deletes after 90 days (TTL field)
+```
+
+### Lambda source code
+
+The Lambda function is at `aws/lambda_handler.py` in this repo:
+
+```python
+import json, boto3, time
+from decimal import Decimal
+
+dynamodb = boto3.resource('dynamodb')
+table    = dynamodb.Table('face-auth-sessions')
+
+def handler(event, context):
+    body     = json.loads(event.get('body') or '[]')
+    sessions = body if isinstance(body, list) else [body]
+    ttl      = int(time.time()) + 90 * 24 * 3600   # 90 days from now
+
+    with table.batch_writer() as writer:
+        for s in sessions:
+            writer.put_item(Item={
+                'sessionId':        s['id'],
+                'userId':           s['userId'],
+                'timestamp':        Decimal(str(s['timestamp'])),
+                'livenessScore':    Decimal(str(s['livenessScore'])),
+                'recognitionScore': Decimal(str(s['recognitionScore'])),
+                'deviceId':         s['deviceId'],
+                'location':         s.get('location', ''),
+                'ttl':              ttl,
+            })
+
+    return {'statusCode': 200, 'body': json.dumps({'synced': len(sessions)})}
+```
+
+---
+
+## 14. How to View Synced Data in AWS
+
+After the app authenticates someone and syncs, you can see the data in two ways.
+
+### Option A — AWS Console (easiest, no commands)
+
+1. Go to [https://console.aws.amazon.com](https://console.aws.amazon.com) and log in
+2. In the search bar at the top, type **DynamoDB** and click it
+3. Make sure the region dropdown (top-right) shows **Asia Pacific (Mumbai) ap-south-1**
+4. Click **Tables** in the left sidebar
+5. Click **face-auth-sessions**
+6. Click **Explore table items**
+7. You will see every authentication session — who authenticated, when, confidence score
+
+### Option B — VS Code Terminal (faster)
+
+Open a terminal in VS Code (`` Ctrl+` ``) and run:
+
+```bash
+# See all synced sessions
+aws dynamodb scan \
+  --table-name face-auth-sessions \
+  --region ap-south-1
+
+# Count how many sessions are stored
+aws dynamodb scan \
+  --table-name face-auth-sessions \
+  --select COUNT \
+  --region ap-south-1
+
+# See sessions for one specific user (replace USER_ID with actual UUID)
+aws dynamodb query \
+  --table-name face-auth-sessions \
+  --index-name userId-index \
+  --key-condition-expression "userId = :uid" \
+  --expression-attribute-values '{":uid":{"S":"USER_ID_HERE"}}' \
+  --region ap-south-1
+```
+
+### Option C — Test the endpoint is alive
+
+```bash
+curl -s -X POST \
+  https://hxzyjbjg05.execute-api.ap-south-1.amazonaws.com/prod/sessions \
+  -H "Content-Type: application/json" \
+  -d '[]'
+```
+
+Expected response: `{"synced": 0}` — means API is live and healthy.
+
+### View Lambda logs (if something goes wrong)
+
+```bash
+aws logs tail /aws/lambda/face-auth-sync --follow --region ap-south-1
+```
+
+This streams live logs from the Lambda function. Every time the app syncs, you see a log line here. Press `Ctrl+C` to stop.
+
+### What a synced session looks like in DynamoDB
+
+```json
+{
+  "sessionId":        "3f8a1b2c-...",
+  "userId":           "a1b2c3d4-...",
+  "timestamp":        1717000000000,
+  "livenessScore":    1.0,
+  "recognitionScore": 0.973,
+  "deviceId":         "mac-simulator-uuid",
+  "location":         "",
+  "ttl":              1724776000
+}
+```
+
+---
+
+## 15. Project Structure Explained
 
 ```
 FaceAuthApp/
@@ -679,7 +939,7 @@ FaceAuthApp/
 
 ---
 
-## 14. The AI Models — Deep Dive
+## 16. The AI Models — Deep Dive
 
 This section explains each AI model, why it was chosen, and how it works technically.
 
@@ -870,7 +1130,7 @@ Quantization used 200 representative face images to calibrate the scale/zero-poi
 
 ---
 
-## 15. Liveness Detection — How We Stop Fake Attacks
+## 17. Liveness Detection — How We Stop Fake Attacks
 
 ### 15.1 The Attack Problem
 
@@ -1008,7 +1268,7 @@ A photo can't blink. A video loop can't respond to a random challenge order. The
 
 ---
 
-## 16. Face Recognition Pipeline
+## 18. Face Recognition Pipeline
 
 ### 16.1 Complete Flow
 
@@ -1127,7 +1387,7 @@ Averaging across 5 frames reduces noise from lighting variations and slight pose
 
 ---
 
-## 17. Security Architecture
+## 19. Security Architecture
 
 ### 17.1 Encryption Overview
 
@@ -1220,7 +1480,7 @@ The `?` placeholder tells SQLite to treat the value as data, not SQL code. Even 
 
 ---
 
-## 18. Offline Storage Design
+## 20. Offline Storage Design
 
 ### 18.1 Why SQLite?
 
@@ -1276,7 +1536,7 @@ Delete user        → embeddings + sessions deleted
 
 ---
 
-## 19. AWS Cloud Sync
+## 21. AWS Cloud Sync — Technical Details
 
 ### 19.1 Architecture
 
