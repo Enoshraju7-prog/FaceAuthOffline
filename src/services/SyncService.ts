@@ -4,8 +4,8 @@ import { SyncPayload, SyncResult } from '../types';
 import StorageService from './StorageService';
 import DeviceInfoService from './DeviceInfoService';
 
-const AWS_ENDPOINT = 'https://your-api-gateway-url.execute-api.ap-south-1.amazonaws.com/prod';
-const SYNC_PATH    = '/attendance/sync';
+const AWS_ENDPOINT = 'https://hxzyjbjg05.execute-api.ap-south-1.amazonaws.com/prod';
+const SYNC_PATH    = '/sessions';
 const MAX_RETRIES  = 3;
 const RETRY_DELAY_MS = 5_000;
 const BATCH_SIZE   = 50;
